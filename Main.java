@@ -21,7 +21,8 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
 
-        CarSharingDB dataBase = new CarSharingDB(DB_NAME);
+        //CarSharingCompanies dataBase = new CarSharingCompanies(DB_NAME);
+        CarSharingCars dataBase = new CarSharingCars(DB_NAME);
 
         boolean running = true;
 
@@ -40,7 +41,35 @@ public class Main {
                     int operation = scanner.nextInt();
                     if (operation == 1) {
                         //System.out.println("printing company list...");
-                        dataBase.printTable();
+                        if (dataBase.printTable()) {
+                            System.out.println("\n0. Back");
+                            int chosenCompany = scanner.nextInt();
+                            boolean manipulatingCompany = true;
+                            while (manipulatingCompany) {
+                                if (chosenCompany != 0) {
+                                    String compName = dataBase.getNameFromID(chosenCompany);
+                                    System.out.println(compName + " company:");
+                                    System.out.println("1. Car list");
+                                    System.out.println("2. Create a car");
+                                    System.out.println("0. Back");
+                                    int companyOp = scanner.nextInt();
+                                    if (companyOp == 1) {
+                                        dataBase.printTable(chosenCompany);
+                                    } else if (companyOp == 2) {
+                                        System.out.println("Enter the car name:");
+                                        String carName = scanner.nextLine();
+                                        while (carName.isBlank()) {
+                                            carName = scanner.nextLine();
+                                        }
+                                        dataBase.newCar(carName, chosenCompany);
+                                    } else {
+                                        manipulatingCompany = false;
+                                    }
+                                } else {
+                                    manipulatingCompany = false;
+                                }
+                            }
+                        }
                         //System.out.println("companies printed...");
                     } else if (operation == 2) {
                        // System.out.println("creating new company...");

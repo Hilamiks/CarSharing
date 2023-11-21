@@ -1,10 +1,10 @@
 package carsharing;
 
-public interface CompanyDAO {
+public interface CarSharingDAO {
     //create
     void createTable();
     //read
-    void printTable();
+    boolean printTable();
     //update
     void newCompany(String name);
     //delete

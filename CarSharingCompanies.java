@@ -2,16 +2,16 @@ package carsharing;
 
 import java.sql.*;
 
-public class CarSharingDB implements CompanyDAO {
+public class CarSharingCompanies implements CarSharingDAO {
     private final String JDBC_DRIVER = "org.h2.Driver";
 
-    private Connection connection = null;
+    Connection connection = null;
 
-    private Statement statement = null;
+    Statement statement = null;
 
-    private static String DB_URL;
+    static String DB_URL;
 
-    public CarSharingDB (String DB_NAME) {
+    public CarSharingCompanies (String DB_NAME) {
         try {
             DB_URL = "jdbc:h2:./src/carsharing/db/"+DB_NAME;
             Class.forName(JDBC_DRIVER);
@@ -37,7 +37,8 @@ public class CarSharingDB implements CompanyDAO {
     public void clear() {
         try {
             connect();
-            statement.executeUpdate("DROP TABLE COMPANY");
+            statement.executeUpdate("DROP TABLE COMPANY;" +
+                    "DROP TABLE CAR;");
             disconnect();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -82,27 +83,30 @@ public class CarSharingDB implements CompanyDAO {
         }
     }
 
-    public void printTable() {
+    public boolean printTable() {
         connect();
-        String intro = "Companies List: ";
+        String intro = "Choose a company: ";
+        boolean hasData = false;
         try {
-            ResultSet companies = statement.executeQuery("SELECT * FROM COMPANY");
-            if (companies.next()) {
+            ResultSet entities = statement.executeQuery("SELECT * FROM COMPANY");
+            if (entities.next()) {
                 do {
                     System.out.print(intro);
                     intro = "";
-                    int id = companies.getInt("ID");
-                    String name = companies.getString("NAME");
+                    int id = entities.getInt("ID");
+                    String name = entities.getString("NAME");
                     System.out.printf("%n%d. %s", id, name);
-                } while (companies.next());
+                } while (entities.next());
+                hasData = true;
             } else {
                 System.out.println("The company list is empty!");
+                hasData = false;
             }
-            System.out.println("\n");
         } catch (SQLException e) {
             e.printStackTrace();
         }
         disconnect();
+        return hasData;
     }
 
     public void newCompany(String newCompName) {
@@ -120,5 +124,23 @@ public class CarSharingDB implements CompanyDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getNameFromID(int id) {
+        connect();
+        String name = "";
+        try {
+            ResultSet entities = statement.executeQuery("SELECT * FROM COMPANY " +
+                    "WHERE ID = " + id);
+            if (entities.next()) {
+                name = entities.getString("NAME");
+            }else {
+                System.out.println("No Such Company");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        disconnect();
+        return name;
     }
 }
