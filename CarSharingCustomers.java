@@ -75,18 +75,22 @@ public class CarSharingCustomers extends CarSharingDB implements CarSharingCusto
     }
 
     @Override
-    public void rentCar(int customerID, int carID) {
+    public void rentCar(int customerID, int companyID, int carID) {
         connect();
         try{
-            ResultSet checker = statement.executeQuery("SELECT RENTED_CAR_ID FROM CUSTOMER " +
-                    "WHERE ID = " + customerID);
-            if (checker.next()) {
-                statement.executeUpdate("UPDATE CUSTOMER " +
-                        "SET RENTED_CAR_ID = " + carID + " " +
-                        "WHERE ID = " + customerID + ";" +
-                        "UPDATE CAR " +
-                        "SET RENTED = TRUE WHERE ID = " + carID + ";");
+            ResultSet checker = statement.executeQuery("SELECT * FROM CAR " +
+                    "WHERE COMPANY_ID = " + companyID);
+            for (int i = 0; i < carID; i++) {
+                checker.next();
             }
+
+            int trueCarID = checker.getInt("ID");
+
+            statement.executeUpdate("UPDATE CUSTOMER " +
+                    "SET RENTED_CAR_ID = " + trueCarID + " " +
+                    "WHERE ID = " + customerID + ";" +
+                    "UPDATE CAR " +
+                    "SET RENTED = TRUE WHERE ID = " + trueCarID + ";");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

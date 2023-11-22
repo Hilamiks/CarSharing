@@ -58,6 +58,7 @@ public class Main {
                                     int companyOp = scanner.nextInt();
                                     if (companyOp == 1) {
                                         carsDB.printTable(chosenCompany);
+                                        System.out.println("");
                                     } else if (companyOp == 2) {
                                         System.out.println("Enter the car name:");
                                         String carName = scanner.nextLine();
@@ -116,7 +117,7 @@ public class Main {
                                             if (carID == 0) {
 
                                             } else {
-                                                customersDB.rentCar(customerID, carID);
+                                                customersDB.rentCar(customerID, chosenComp, carID);
                                             }
                                         }
                                     }

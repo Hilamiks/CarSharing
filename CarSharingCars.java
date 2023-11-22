@@ -40,7 +40,7 @@ public class CarSharingCars extends CarSharingDB implements CarSharingCarsDAO {
                     intro = "";
                     int id = entities.getInt("ID");
                     String name = entities.getString("NAME");
-                    System.out.printf("%n%d. %s", id, name);
+                    System.out.printf("%n%d. %s", i, name);
                     i++;
                 } while (entities.next());
                 result = true;
