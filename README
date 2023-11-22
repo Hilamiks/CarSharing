@@ -1,0 +1,4 @@
+this project is my first experience with using SQL statements in Java!
+It allows you to log in as a manager to create companies and add cars to said companies
+OR log in as a customer to rent, view, and return cars.
+All operations update databases :)
