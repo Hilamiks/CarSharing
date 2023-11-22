@@ -80,17 +80,27 @@ public class CarSharingCustomers extends CarSharingDB implements CarSharingCusto
         try{
             ResultSet checker = statement.executeQuery("SELECT * FROM CAR " +
                     "WHERE COMPANY_ID = " + companyID);
-            for (int i = 0; i < carID; i++) {
-                checker.next();
+            checker.next();
+            for (int i = 1; i < carID; i++) {
+                if (!checker.getBoolean("RENTED")) {
+                    checker.next();
+                }
             }
 
             int trueCarID = checker.getInt("ID");
+
 
             statement.executeUpdate("UPDATE CUSTOMER " +
                     "SET RENTED_CAR_ID = " + trueCarID + " " +
                     "WHERE ID = " + customerID + ";" +
                     "UPDATE CAR " +
                     "SET RENTED = TRUE WHERE ID = " + trueCarID + ";");
+
+
+            ResultSet temp = statement.executeQuery("SELECT * FROM CAR " +
+                    "WHERE ID = " + trueCarID);
+            temp.next();
+            System.out.println("You rented '" + temp.getString("NAME") + "'");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -146,6 +156,7 @@ public class CarSharingCustomers extends CarSharingDB implements CarSharingCusto
                 statement.executeUpdate("UPDATE CUSTOMER " +
                         "SET RENTED_CAR_ID = NULL " +
                         "WHERE ID = "+customerID);
+                System.out.println("You've returned a rented car!");
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
