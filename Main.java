@@ -21,13 +21,16 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
 
-        //CarSharingCompanies dataBase = new CarSharingCompanies(DB_NAME);
-        CarSharingCars dataBase = new CarSharingCars(DB_NAME);
+        CarSharingCompanies companiesDB = new CarSharingCompanies(DB_NAME);
+        CarSharingCars carsDB = new CarSharingCars(DB_NAME);
+        CarSharingCustomers customersDB = new CarSharingCustomers(DB_NAME);
 
         boolean running = true;
 
         while (running) {
             System.out.println("1. Log in as a manager");
+            System.out.println("2. Log in as a customer");
+            System.out.println("3. Create a customer");
             System.out.println("0. Exit");
             int command = scanner.nextInt();
             if (command == 0) {
@@ -41,27 +44,27 @@ public class Main {
                     int operation = scanner.nextInt();
                     if (operation == 1) {
                         //System.out.println("printing company list...");
-                        if (dataBase.printTable()) {
+                        if (companiesDB.printTable()) {
                             System.out.println("\n0. Back");
                             int chosenCompany = scanner.nextInt();
                             boolean manipulatingCompany = true;
                             while (manipulatingCompany) {
                                 if (chosenCompany != 0) {
-                                    String compName = dataBase.getNameFromID(chosenCompany);
+                                    String compName = companiesDB.getNameFromID(chosenCompany);
                                     System.out.println(compName + " company:");
                                     System.out.println("1. Car list");
                                     System.out.println("2. Create a car");
                                     System.out.println("0. Back");
                                     int companyOp = scanner.nextInt();
                                     if (companyOp == 1) {
-                                        dataBase.printTable(chosenCompany);
+                                        carsDB.printTable(chosenCompany);
                                     } else if (companyOp == 2) {
                                         System.out.println("Enter the car name:");
                                         String carName = scanner.nextLine();
                                         while (carName.isBlank()) {
                                             carName = scanner.nextLine();
                                         }
-                                        dataBase.newCar(carName, chosenCompany);
+                                        carsDB.newCar(carName, chosenCompany);
                                     } else {
                                         manipulatingCompany = false;
                                     }
@@ -78,12 +81,61 @@ public class Main {
                         while (newCompName.isBlank()) {
                             newCompName = scanner.nextLine();
                         }
-                        dataBase.newCompany(newCompName);
+                        companiesDB.newCompany(newCompName);
                         //System.out.println("New company created");
                     } else if (operation == 0) {
                         manipulatingTables = false;
                     }
                 }
+            } else if (command == 2) {
+                while (customersDB.printCustomers()) {
+                    System.out.println("\n0. Back");
+                    int customerID = scanner.nextInt();
+                    if (customerID == 0) {
+                        break;
+                    } else {
+                        boolean customerOps = true;
+                        while (customerOps) {
+                            System.out.println("1. Rent a car");
+                            System.out.println("2. Return a rented car");
+                            System.out.println("3. My rented car");
+                            System.out.println("0. Back");
+                            int customerCommand = scanner.nextInt();
+                            if (customerCommand == 0) {
+                                customerOps = false;
+                            } else if (customerCommand == 1) {
+                                if (customersDB.rentAvailable(customerID)) {
+                                    if (companiesDB.printTable()) {
+                                        System.out.println("\n0. Back");
+                                        int chosenComp = scanner.nextInt();
+                                        if (chosenComp == 0) {
+
+                                        } else if (carsDB.printTable(chosenComp)) {
+                                            System.out.println("\n0. Back");
+                                            int carID = scanner.nextInt();
+                                            if (carID == 0) {
+
+                                            } else {
+                                                customersDB.rentCar(customerID, carID);
+                                            }
+                                        }
+                                    }
+                                }
+                            } else if (customerCommand == 2) {
+                                customersDB.returnCar(customerID);
+                            } else if (customerCommand == 3) {
+                                customersDB.checkRentalStatus(customerID);
+                            }
+                        }
+                    }
+                }
+            } else if (command == 3) {
+                System.out.println("Enter the customer name:");
+                String newCustomerName = scanner.nextLine();
+                while (newCustomerName.isBlank()) {
+                    newCustomerName = scanner.nextLine();
+                }
+                customersDB.addCustomer(newCustomerName);
             }
         }
 

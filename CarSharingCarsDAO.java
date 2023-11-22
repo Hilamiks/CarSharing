@@ -5,7 +5,7 @@ public interface CarSharingCarsDAO {
     void createCarTable();
 
     //read
-    void printTable(int compID);
+    boolean printTable(int compID);
 
     //update
     void newCar(String name, int compID);

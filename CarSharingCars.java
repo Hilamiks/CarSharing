@@ -2,7 +2,7 @@ package carsharing;
 
 import java.sql.*;
 
-public class CarSharingCars extends CarSharingCompanies implements CarSharingCarsDAO {
+public class CarSharingCars extends CarSharingDB implements CarSharingCarsDAO {
 
     public CarSharingCars(String DB_NAME) {
         super(DB_NAME);
@@ -16,6 +16,7 @@ public class CarSharingCars extends CarSharingCompanies implements CarSharingCar
                     "ID INT PRIMARY KEY AUTO_INCREMENT," +
                     "NAME VARCHAR(30) UNIQUE NOT NULL," +
                     "COMPANY_ID INT NOT NULL," +
+                    "RENTED BOOLEAN DEFAULT FALSE, " +
                     "CONSTRAINT fk_id FOREIGN KEY (COMPANY_ID)" +
                     "REFERENCES COMPANY(ID)" +
                     ");");
@@ -25,30 +26,33 @@ public class CarSharingCars extends CarSharingCompanies implements CarSharingCar
         }
     }
 
-    public void printTable(int compID) {
+    public boolean printTable(int compID) {
+        boolean result = false;
         connect();
         String intro = "Cars List: ";
         int i = 1;
         try {
             ResultSet entities = statement.executeQuery("SELECT * FROM CAR " +
-                    "WHERE COMPANY_ID = "+compID);
+                    "WHERE COMPANY_ID = " + compID + " AND RENTED = FALSE");
             if (entities.next()) {
                 do {
                     System.out.print(intro);
                     intro = "";
                     int id = entities.getInt("ID");
                     String name = entities.getString("NAME");
-                    System.out.printf("%n%d. %s", i, name);
+                    System.out.printf("%n%d. %s", id, name);
                     i++;
                 } while (entities.next());
+                result = true;
             } else {
                 System.out.println("The car list is empty!");
+                result = false;
             }
-            System.out.println("\n");
         } catch (SQLException e) {
             e.printStackTrace();
         }
         disconnect();
+        return result;
     }
 
     public void newCar(String newCarName, int compID) {
